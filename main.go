@@ -3,6 +3,7 @@ package main
 import "fmt"
 
 const (
+	// Version
 	MAJOR = 0
 	MINOR = 1
 	PATCH = 0

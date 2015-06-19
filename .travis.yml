@@ -3,6 +3,8 @@ go:
     - 1.4
 env:
     - "PATH=/home/travis/gopath/bin:$PATH"
+before_script:
+    - psql -c 'create database triage_test;' -U postgres
 before_install:
     - go get github.com/axw/gocov/gocov
     - go get github.com/mattn/goveralls
