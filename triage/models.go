@@ -1,9 +1,11 @@
 package triage
 
+// Ticket holds data on a support ticket
 type Ticket struct {
 	Message string
 }
 
+// NewTicket instantiates a new ticket
 func NewTicket(msg string) *Ticket {
 	return &Ticket{
 		Message: msg,
