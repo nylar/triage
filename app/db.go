@@ -1,4 +1,4 @@
-package triage
+package app
 
 import (
 	"database/sql"

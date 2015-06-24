@@ -1,4 +1,4 @@
-package triage
+package models
 
 // Ticket holds data on a support ticket
 type Ticket struct {
@@ -15,3 +15,5 @@ func NewTicket(msg string) *Ticket {
 func (t *Ticket) String() string {
 	return t.Message
 }
+
+type Tickets []Ticket
