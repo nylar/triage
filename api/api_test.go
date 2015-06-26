@@ -7,25 +7,30 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
-	"github.com/nylar/triage/app"
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	conn   *sql.DB
-	router *mux.Router
-)
+var router *mux.Router
 
 func init() {
 	router = mux.NewRouter()
 	router.StrictSlash(true)
+}
 
-	var err error
-	conn, err = app.Connect("postgres", "", "triage")
+func setUp() *sql.DB {
+	mockdb, err := sqlmock.New()
 	if err != nil {
 		log.Fatalln(err.Error())
+	}
+	return mockdb
+}
+
+func tearDown(db *sql.DB) {
+	if err := db.Close(); err != nil {
+		log.Fatalf("Error '%s' was not expected while closing the database", err)
 	}
 }
 

@@ -11,23 +11,34 @@ import (
 )
 
 func TestTicketIndex(t *testing.T) {
+	db := setUp()
+	defer tearDown(db)
+
+	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
+		WillReturnRows(sqlmock.
+		NewRows([]string{"ticket_id", "message"}).
+		AddRow(1, "y"))
+
 	r, err := http.NewRequest("GET", "/api/tickets/", nil)
 	if err != nil {
 		t.Error(err.Error())
 	}
 
 	w := httptest.NewRecorder()
-	Routes(router, conn)
+	h := TicketIndex(db)
+	h.ServeHTTP(w, r)
+
+	assert.Equal(t, 200, w.Code)
+
+	Routes(router, db)
 	router.ServeHTTP(w, r)
 
 	assert.Equal(t, 200, w.Code)
 }
 
 func TestTicketIndexError(t *testing.T) {
-	db, err := sqlmock.New()
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	db := setUp()
+	defer tearDown(db)
 
 	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
 		WillReturnError(fmt.Errorf("Query failed"))
@@ -42,50 +53,41 @@ func TestTicketIndexError(t *testing.T) {
 	h.ServeHTTP(w, r)
 
 	assert.Equal(t, 500, w.Code)
-
-	if err = db.Close(); err != nil {
-		t.Errorf("Error '%s' was not expected while closing the database", err)
-	}
-
 }
 
 func TestFetchTickets(t *testing.T) {
-	_, err := FetchTickets(conn)
+	db := setUp()
+	defer tearDown(db)
+
+	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
+		WillReturnRows(sqlmock.
+		NewRows([]string{"ticket_id", "message"}).
+		AddRow(1, "y"))
+
+	_, err := FetchTickets(db)
 	assert.NoError(t, err)
 }
 
 func TestFetchTicketsRowsError(t *testing.T) {
-	db, err := sqlmock.New()
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	db := setUp()
+	defer tearDown(db)
 
 	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
 		WillReturnError(fmt.Errorf("Query failed"))
 
-	_, err = FetchTickets(db)
+	_, err := FetchTickets(db)
 	assert.Error(t, err)
-
-	if err = db.Close(); err != nil {
-		t.Errorf("Error '%s' was not expected while closing the database", err)
-	}
 }
 
 func TestFetchTicketsScanError(t *testing.T) {
-	db, err := sqlmock.New()
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+	db := setUp()
+	defer tearDown(db)
 
 	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
 		WillReturnRows(sqlmock.
 		NewRows([]string{"ticket_id", "message"}).
 		AddRow("x", "y"))
 
-	_, err = FetchTickets(db)
+	_, err := FetchTickets(db)
 	assert.Error(t, err)
-
-	if err = db.Close(); err != nil {
-		t.Errorf("Error '%s' was not expected while closing the database", err)
-	}
 }
