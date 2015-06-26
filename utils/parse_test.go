@@ -24,7 +24,7 @@ func TestParseAsInt64(t *testing.T) {
 	expectedType := new(int64)
 
 	num, err := ParseToInt64("1")
-	assert.Equal(t, num, 1)
+	assert.Equal(t, num, int64(1))
 	assert.NoError(t, err)
 	assert.IsType(t, num, *expectedType)
 }
