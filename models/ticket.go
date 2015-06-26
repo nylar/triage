@@ -2,7 +2,8 @@ package models
 
 // Ticket holds data on a support ticket
 type Ticket struct {
-	Message string
+	TicketID int    `json:"ticket_id"`
+	Message  string `json:"message"`
 }
 
 // NewTicket instantiates a new ticket

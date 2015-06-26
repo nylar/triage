@@ -1,19 +1,30 @@
 package api
 
-import "github.com/gorilla/mux"
+import (
+	"database/sql"
+	"encoding/json"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
 
 type errResponse struct {
 	StatusCode int    `json:"status_code"`
 	Message    string `json:"message"`
 }
 
-type response struct {
-	StatusCode int      `json:"status_code"`
-	Data       struct{} `json:"data"`
-}
-
-func Routes(m *mux.Router) {
+func Routes(m *mux.Router, db *sql.DB) {
 	s := m.PathPrefix("/api").Subrouter()
 
-	s.Handle("/tickets", AllTickets()).Methods("GET")
+	s.Handle("/tickets/", TicketIndex(db)).Methods("GET")
+}
+
+func errorResponse(w http.ResponseWriter, err string, code int) {
+	enc := json.NewEncoder(w)
+	w.WriteHeader(code)
+	enc.Encode(errResponse{
+		StatusCode: code,
+		Message:    err,
+	})
+	return
 }
