@@ -9,6 +9,7 @@ import (
 func TestModels_Ticket_NewTicket(t *testing.T) {
 	tkt := NewTicket("")
 	assert.IsType(t, &Ticket{}, tkt)
+	assert.Equal(t, tkt.Status.Name, "open")
 }
 
 func TestModels_Ticket_String(t *testing.T) {

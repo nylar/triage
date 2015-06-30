@@ -12,3 +12,9 @@ func TestStatus_String(t *testing.T) {
 
 	assert.Equal(t, s.String(), "open")
 }
+
+func TestStatus_DefaultStatus(t *testing.T) {
+	s := DefaultStatus()
+	assert.Equal(t, s.Name, "open")
+	assert.Equal(t, s.StatusID, 1)
+}
