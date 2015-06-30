@@ -16,8 +16,8 @@ func TestTicketIndex(t *testing.T) {
 
 	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
 		WillReturnRows(sqlmock.
-		NewRows([]string{"ticket_id", "message"}).
-		AddRow(1, "y"))
+		NewRows([]string{"ticket_id", "message", "status_id"}).
+		AddRow(1, "y", 1))
 
 	r, err := http.NewRequest("GET", "/api/tickets/", nil)
 	if err != nil {
@@ -61,8 +61,8 @@ func TestFetchTickets(t *testing.T) {
 
 	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
 		WillReturnRows(sqlmock.
-		NewRows([]string{"ticket_id", "message"}).
-		AddRow(1, "y"))
+		NewRows([]string{"ticket_id", "message", "status_id"}).
+		AddRow(1, "y", 1))
 
 	_, err := FetchTickets(db)
 	assert.NoError(t, err)
@@ -85,8 +85,8 @@ func TestFetchTicketsScanError(t *testing.T) {
 
 	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
 		WillReturnRows(sqlmock.
-		NewRows([]string{"ticket_id", "message"}).
-		AddRow("x", "y"))
+		NewRows([]string{"ticket_id", "message", "status_id"}).
+		AddRow("x", "y", "z"))
 
 	_, err := FetchTickets(db)
 	assert.Error(t, err)

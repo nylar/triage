@@ -22,3 +22,5 @@ func (s *Status) String() string {
 func DefaultStatus() *Status {
 	return &Status{StatusID: int(defaultStatus), Name: "open"}
 }
+
+type Statuses []Status

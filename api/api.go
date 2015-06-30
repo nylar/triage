@@ -17,6 +17,7 @@ func Routes(m *mux.Router, db *sql.DB) {
 	s := m.PathPrefix("/api").Subrouter()
 
 	s.Handle("/tickets/", TicketIndex(db)).Methods("GET")
+	s.Handle("/statuses/", StatusIndex(db)).Methods("GET")
 }
 
 func errorResponse(w http.ResponseWriter, err string, code int) {

@@ -8,39 +8,39 @@ import (
 	"github.com/nylar/triage/models"
 )
 
-func FetchTickets(db *sql.DB) (*models.Tickets, error) {
-	tkts := new(models.Tickets)
+func FetchStatuses(db *sql.DB) (*models.Statuses, error) {
+	statuses := new(models.Statuses)
 
-	rows, err := db.Query(`SELECT * FROM ticket`)
+	rows, err := db.Query(`SELECT * FROM status`)
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
-		tkt := new(models.Ticket)
-		err := rows.Scan(&tkt.TicketID, &tkt.Message, &tkt.Status.StatusID)
+		status := new(models.Status)
+		err := rows.Scan(&status.StatusID, &status.Name)
 		if err != nil {
 			return nil, err
 		}
 
-		*tkts = append(*tkts, *tkt)
+		*statuses = append(*statuses, *status)
 	}
 
-	return tkts, nil
+	return statuses, nil
 }
 
-func TicketIndex(db *sql.DB) http.Handler {
+func StatusIndex(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 
 		enc := json.NewEncoder(w)
 
-		tkts, err := FetchTickets(db)
+		statuses, err := FetchStatuses(db)
 		if err != nil {
 			errorResponse(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		enc.Encode(tkts)
+		enc.Encode(statuses)
 	})
 }
