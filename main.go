@@ -13,12 +13,12 @@ import (
 
 // Version
 const (
-	MAJOR = 0
-	MINOR = 1
-	PATCH = 0
+	Major = 0
+	Minor = 1
+	Patch = 0
 )
 
-var version = fmt.Sprintf("%d.%d.%d", MAJOR, MINOR, PATCH)
+var version = fmt.Sprintf("%d.%d.%d", Major, Minor, Patch)
 
 func main() {
 	fmt.Printf("Triage, v%s\n", version)
