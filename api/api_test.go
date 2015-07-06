@@ -8,27 +8,29 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/gorilla/mux"
+	"github.com/julienschmidt/httprouter"
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
-var router *mux.Router
-
-func init() {
-	router = mux.NewRouter()
-	router.StrictSlash(true)
-}
+var server *httptest.Server
 
 func setUp() *sql.DB {
 	mockdb, err := sqlmock.New()
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
+
+	routes := httprouter.New()
+	Routes(routes, mockdb)
+	server = httptest.NewServer(routes)
+
 	return mockdb
 }
 
 func tearDown(db *sql.DB) {
+	server.Close()
+
 	if err := db.Close(); err != nil {
 		log.Fatalf("Error '%s' was not expected while closing the database", err)
 	}

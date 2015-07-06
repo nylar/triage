@@ -5,8 +5,13 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/nylar/triage/models"
 )
+
+type ticketService struct {
+	apiService
+}
 
 func FetchTickets(db *sql.DB) (*models.Tickets, error) {
 	tkts := new(models.Tickets)
@@ -29,18 +34,15 @@ func FetchTickets(db *sql.DB) (*models.Tickets, error) {
 	return tkts, nil
 }
 
-func TicketIndex(db *sql.DB) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
+func (ts *ticketService) Index(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Add("Content-Type", "application/json")
+	enc := json.NewEncoder(w)
 
-		enc := json.NewEncoder(w)
+	tickets, err := FetchTickets(ts.db)
+	if err != nil {
+		errorResponse(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-		tkts, err := FetchTickets(db)
-		if err != nil {
-			errorResponse(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		enc.Encode(tkts)
-	})
+	enc.Encode(tickets)
 }

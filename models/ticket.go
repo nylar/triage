@@ -4,7 +4,7 @@ package models
 type Ticket struct {
 	TicketID int    `json:"ticket_id"`
 	Message  string `json:"message"`
-	Status   Status `json:"Status"`
+	Status   Status `json:"status"`
 }
 
 // NewTicket instantiates a new ticket

@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/julienschmidt/httprouter"
 	_ "github.com/lib/pq"
 	"github.com/nylar/triage/api"
 	"github.com/nylar/triage/app"
@@ -30,18 +30,15 @@ func main() {
 	}
 	defer db.Close()
 
-	// Initialse a new router and turn on missing trailing slash redirect
-	m := mux.NewRouter()
-	m.StrictSlash(true)
+	// Initialse a new router
+	router := httprouter.New()
 
 	// Setup API routes
-	api.Routes(m, db)
+	api.Routes(router, db)
 
 	// Setup a route for the public facing site
-	m.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
-
-	http.Handle("/", m)
+	router.ServeFiles("/public/*filepath", http.Dir("public"))
 
 	log.Println("Serving on port :3030.")
-	http.ListenAndServe(":3030", nil)
+	http.ListenAndServe(":3030", router)
 }

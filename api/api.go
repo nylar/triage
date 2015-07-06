@@ -5,19 +5,28 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/julienschmidt/httprouter"
 )
+
+type apiService struct {
+	db *sql.DB
+}
 
 type errResponse struct {
 	StatusCode int    `json:"status_code"`
 	Message    string `json:"message"`
 }
 
-func Routes(m *mux.Router, db *sql.DB) {
-	s := m.PathPrefix("/api").Subrouter()
+func Routes(r *httprouter.Router, db *sql.DB) {
+	api := apiService{db: db}
 
-	s.Handle("/tickets/", TicketIndex(db)).Methods("GET")
-	s.Handle("/statuses/", StatusIndex(db)).Methods("GET")
+	// Ticket API routes
+	ticket := ticketService{api}
+	r.GET("/api/tickets", ticket.Index)
+
+	// Status API routes
+	status := statusService{api}
+	r.GET("/api/statuses", status.Index)
 }
 
 func errorResponse(w http.ResponseWriter, err string, code int) {

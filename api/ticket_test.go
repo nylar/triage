@@ -3,7 +3,6 @@ package api
 import (
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -19,21 +18,11 @@ func TestTicketIndex(t *testing.T) {
 		NewRows([]string{"ticket_id", "message", "status_id"}).
 		AddRow(1, "y", 1))
 
-	r, err := http.NewRequest("GET", "/api/tickets/", nil)
-	if err != nil {
-		t.Error(err.Error())
-	}
+	route := server.URL + "/api/tickets"
+	resp, err := http.Get(route)
 
-	w := httptest.NewRecorder()
-	h := TicketIndex(db)
-	h.ServeHTTP(w, r)
-
-	assert.Equal(t, 200, w.Code)
-
-	Routes(router, db)
-	router.ServeHTTP(w, r)
-
-	assert.Equal(t, 200, w.Code)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode)
 }
 
 func TestTicketIndexError(t *testing.T) {
@@ -43,16 +32,11 @@ func TestTicketIndexError(t *testing.T) {
 	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
 		WillReturnError(fmt.Errorf("Query failed"))
 
-	r, err := http.NewRequest("GET", "/api/tickets/", nil)
-	if err != nil {
-		t.Error(err.Error())
-	}
+	route := server.URL + "/api/tickets"
+	resp, err := http.Get(route)
 
-	w := httptest.NewRecorder()
-	h := TicketIndex(db)
-	h.ServeHTTP(w, r)
-
-	assert.Equal(t, 500, w.Code)
+	assert.NoError(t, err)
+	assert.Equal(t, 500, resp.StatusCode)
 }
 
 func TestFetchTickets(t *testing.T) {

@@ -5,8 +5,13 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/nylar/triage/models"
 )
+
+type statusService struct {
+	apiService
+}
 
 func FetchStatuses(db *sql.DB) (*models.Statuses, error) {
 	statuses := new(models.Statuses)
@@ -29,18 +34,16 @@ func FetchStatuses(db *sql.DB) (*models.Statuses, error) {
 	return statuses, nil
 }
 
-func StatusIndex(db *sql.DB) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
+func (ss *statusService) Index(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Add("Content-Type", "application/json")
 
-		enc := json.NewEncoder(w)
+	enc := json.NewEncoder(w)
 
-		statuses, err := FetchStatuses(db)
-		if err != nil {
-			errorResponse(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+	statuses, err := FetchStatuses(ss.db)
+	if err != nil {
+		errorResponse(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-		enc.Encode(statuses)
-	})
+	enc.Encode(statuses)
 }
