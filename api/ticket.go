@@ -7,6 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/nylar/triage/models"
+	"github.com/nylar/triage/utils"
 )
 
 type ticketService struct {
@@ -34,6 +35,22 @@ func FetchTickets(db *sql.DB) (*models.Tickets, error) {
 	return tkts, nil
 }
 
+func FetchTicket(db *sql.DB, id int) (*models.Ticket, error) {
+	tkt := new(models.Ticket)
+
+	stmt, err := db.Prepare(`SELECT * FROM ticket WHERE ticket_id = $1`)
+	if err != nil {
+		return nil, err
+	}
+
+	err = stmt.QueryRow(id).Scan(&tkt.TicketID, &tkt.Message, &tkt.Status.StatusID)
+	if err != nil {
+		return nil, err
+	}
+
+	return tkt, nil
+}
+
 func (ts *ticketService) Index(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Add("Content-Type", "application/json")
 	enc := json.NewEncoder(w)
@@ -45,4 +62,28 @@ func (ts *ticketService) Index(w http.ResponseWriter, r *http.Request, p httprou
 	}
 
 	enc.Encode(tickets)
+}
+
+func (ts *ticketService) Show(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Add("Content-Type", "application/json")
+	enc := json.NewEncoder(w)
+
+	id := p.ByName("id")
+	tid, err := utils.ParseToInt(id)
+	if err != nil {
+		errorResponse(w, "ID param could not be parsed as an integer", http.StatusBadRequest)
+		return
+	}
+
+	ticket, err := FetchTicket(ts.db, tid)
+	switch {
+	case err == sql.ErrNoRows:
+		errorResponse(w, "Ticket not found", http.StatusNotFound)
+		return
+	case err != nil:
+		errorResponse(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	enc.Encode(ticket)
 }

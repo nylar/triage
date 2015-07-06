@@ -22,6 +22,7 @@ func Routes(r *httprouter.Router, db *sql.DB) {
 
 	// Ticket API routes
 	ticket := ticketService{api}
+	r.GET("/api/tickets/:id", ticket.Show)
 	r.GET("/api/tickets", ticket.Index)
 
 	// Status API routes
