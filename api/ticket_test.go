@@ -1,12 +1,14 @@
 package api
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/nylar/triage/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -160,5 +162,75 @@ func TestFetchTicketPrepareError(t *testing.T) {
 	sqlmock.ExpectPrepare().WillReturnError(fmt.Errorf("Some db error"))
 
 	_, err := FetchTicket(db, 1)
+	assert.Error(t, err)
+}
+
+func TestTicketCreate(t *testing.T) {
+	db := setUp()
+	defer tearDown(db)
+
+	sqlmock.ExpectPrepare()
+	sqlmock.ExpectExec("INSERT INTO ticket \\(subject, status_id\\)").
+		WithArgs("test", 1).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+
+	route := server.URL + "/api/tickets"
+	data := []byte(`{"subject":"test"}`)
+	resp, err := http.Post(route, "application/json", bytes.NewBuffer(data))
+
+	assert.NoError(t, err)
+	assert.Equal(t, 201, resp.StatusCode)
+}
+
+func TestTicketCreateError(t *testing.T) {
+	db := setUp()
+	defer tearDown(db)
+
+	sqlmock.ExpectPrepare()
+	sqlmock.ExpectExec("INSERT INTO ticket \\(subject, status_id\\)").
+		WithArgs("test", 1).
+		WillReturnError(fmt.Errorf("Some db error"))
+
+	route := server.URL + "/api/tickets"
+	data := []byte(`{"subject":"test"}`)
+	resp, err := http.Post(route, "application/json", bytes.NewBuffer(data))
+
+	assert.NoError(t, err)
+	assert.Equal(t, 500, resp.StatusCode)
+}
+
+func TestCreateTicket(t *testing.T) {
+	db := setUp()
+	defer tearDown(db)
+
+	sqlmock.ExpectPrepare()
+	sqlmock.ExpectExec("INSERT INTO ticket \\(subject, status_id\\)").
+		WithArgs("test", 1).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+
+	err := CreateTicket(db, &models.Ticket{Subject: "test"})
+	assert.NoError(t, err)
+}
+
+func TestCreateTicketPrepareError(t *testing.T) {
+	db := setUp()
+	defer tearDown(db)
+
+	sqlmock.ExpectPrepare().WillReturnError(fmt.Errorf("Some db error"))
+
+	err := CreateTicket(db, &models.Ticket{Subject: "test"})
+	assert.Error(t, err)
+}
+
+func TestCreateTicketExecError(t *testing.T) {
+	db := setUp()
+	defer tearDown(db)
+
+	sqlmock.ExpectPrepare()
+	sqlmock.ExpectExec("INSERT INTO ticket \\(subject, status_id\\)").
+		WithArgs("test", 1).
+		WillReturnError(fmt.Errorf("Some db error"))
+
+	err := CreateTicket(db, &models.Ticket{Subject: "test"})
 	assert.Error(t, err)
 }

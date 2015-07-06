@@ -13,8 +13,8 @@ func TestModels_Ticket_NewTicket(t *testing.T) {
 }
 
 func TestModels_Ticket_String(t *testing.T) {
-	msg := "I need help!"
-	tkt := NewTicket(msg)
+	subject := "I need help!"
+	tkt := NewTicket(subject)
 
-	assert.Equal(t, tkt.String(), msg)
+	assert.Equal(t, tkt.String(), subject)
 }

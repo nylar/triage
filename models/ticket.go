@@ -3,21 +3,21 @@ package models
 // Ticket holds data on a support ticket
 type Ticket struct {
 	TicketID int    `json:"ticket_id"`
-	Message  string `json:"message"`
+	Subject  string `json:"subject"`
 	Status   Status `json:"status"`
 }
 
 // NewTicket instantiates a new ticket
-func NewTicket(msg string) *Ticket {
+func NewTicket(subject string) *Ticket {
 	status := DefaultStatus()
 	return &Ticket{
-		Message: msg,
+		Subject: subject,
 		Status:  *status,
 	}
 }
 
 func (t *Ticket) String() string {
-	return t.Message
+	return t.Subject
 }
 
 type Tickets []Ticket

@@ -24,7 +24,7 @@ func FetchTickets(db *sql.DB) (*models.Tickets, error) {
 
 	for rows.Next() {
 		tkt := new(models.Ticket)
-		err := rows.Scan(&tkt.TicketID, &tkt.Message, &tkt.Status.StatusID)
+		err := rows.Scan(&tkt.TicketID, &tkt.Subject, &tkt.Status.StatusID)
 		if err != nil {
 			return nil, err
 		}
@@ -42,13 +42,28 @@ func FetchTicket(db *sql.DB, id int) (*models.Ticket, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer stmt.Close()
 
-	err = stmt.QueryRow(id).Scan(&tkt.TicketID, &tkt.Message, &tkt.Status.StatusID)
+	err = stmt.QueryRow(id).Scan(&tkt.TicketID, &tkt.Subject, &tkt.Status.StatusID)
 	if err != nil {
 		return nil, err
 	}
 
 	return tkt, nil
+}
+
+func CreateTicket(db *sql.DB, t *models.Ticket) error {
+	stmt, err := db.Prepare(`INSERT INTO ticket (subject, status_id) VALUES ($1,  $2)`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(t.Subject, models.Open); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (ts *ticketService) Index(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -86,4 +101,25 @@ func (ts *ticketService) Show(w http.ResponseWriter, r *http.Request, p httprout
 	}
 
 	enc.Encode(ticket)
+}
+
+func (ts *ticketService) Create(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Add("Content-Type", "application/json")
+	tkt := new(models.Ticket)
+
+	dec := json.NewDecoder(r.Body)
+	dec.Decode(&tkt)
+
+	err := CreateTicket(ts.db, tkt)
+	if err != nil {
+		errorResponse(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	enc := json.NewEncoder(w)
+	w.WriteHeader(http.StatusCreated)
+	enc.Encode(errResponse{
+		StatusCode: http.StatusCreated,
+		Message:    "Created ticket successfully",
+	})
 }
