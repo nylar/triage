@@ -12,7 +12,7 @@ App = {
 			tickets: tickets
 		}
 	view: (ctrl) ->
-		m 'div', [(ctrl.tickets!.map ((ticket) -> m 'p', ticket.message))]
+		m 'div', [(ctrl.tickets!.map ((ticket) -> m 'p', ticket.subject))]
 }
 
 m.mount (document.getElementById 'tickets'), App
