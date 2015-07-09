@@ -14,17 +14,27 @@ type ticketService struct {
 	apiService
 }
 
+var (
+	fetchTicketsStmt = `
+SELECT ticket.ticket_id,
+       ticket.subject,
+       ticket.status_id,
+       status.name
+FROM ticket
+INNER JOIN status ON ticket.status_id = status.status_id`
+)
+
 func FetchTickets(db *sql.DB) (*models.Tickets, error) {
 	tkts := new(models.Tickets)
 
-	rows, err := db.Query(`SELECT * FROM ticket`)
+	rows, err := db.Query(fetchTicketsStmt)
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
 		tkt := new(models.Ticket)
-		err := rows.Scan(&tkt.TicketID, &tkt.Subject, &tkt.Status.StatusID)
+		err := rows.Scan(&tkt.TicketID, &tkt.Subject, &tkt.Status.StatusID, &tkt.Status.Name)
 		if err != nil {
 			return nil, err
 		}

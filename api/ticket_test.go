@@ -12,14 +12,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	testFetchTicketStmt = `SELECT (.+) FROM ticket INNER JOIN status (.+)`
+)
+
 func TestTicketIndex(t *testing.T) {
 	db := setUp()
 	defer tearDown(db)
 
-	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
+	sqlmock.ExpectQuery(testFetchTicketStmt).
 		WillReturnRows(sqlmock.
-		NewRows([]string{"ticket_id", "message", "status_id"}).
-		AddRow(1, "y", 1))
+		NewRows([]string{"ticket_id", "message", "status_id", "name"}).
+		AddRow(1, "y", 1, "open"))
 
 	route := server.URL + "/api/tickets"
 	resp, err := http.Get(route)
@@ -32,7 +36,7 @@ func TestTicketIndexError(t *testing.T) {
 	db := setUp()
 	defer tearDown(db)
 
-	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
+	sqlmock.ExpectQuery(testFetchTicketStmt).
 		WillReturnError(fmt.Errorf("Query failed"))
 
 	route := server.URL + "/api/tickets"
@@ -46,10 +50,10 @@ func TestFetchTickets(t *testing.T) {
 	db := setUp()
 	defer tearDown(db)
 
-	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
+	sqlmock.ExpectQuery(testFetchTicketStmt).
 		WillReturnRows(sqlmock.
-		NewRows([]string{"ticket_id", "message", "status_id"}).
-		AddRow(1, "y", 1))
+		NewRows([]string{"ticket_id", "message", "status_id", "name"}).
+		AddRow(1, "y", 1, "open"))
 
 	_, err := FetchTickets(db)
 	assert.NoError(t, err)
@@ -59,7 +63,7 @@ func TestFetchTicketsRowsError(t *testing.T) {
 	db := setUp()
 	defer tearDown(db)
 
-	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
+	sqlmock.ExpectQuery(testFetchTicketStmt).
 		WillReturnError(fmt.Errorf("Query failed"))
 
 	_, err := FetchTickets(db)
@@ -70,10 +74,10 @@ func TestFetchTicketsScanError(t *testing.T) {
 	db := setUp()
 	defer tearDown(db)
 
-	sqlmock.ExpectQuery("SELECT (.+) FROM ticket").
+	sqlmock.ExpectQuery(testFetchTicketStmt).
 		WillReturnRows(sqlmock.
-		NewRows([]string{"ticket_id", "message", "status_id"}).
-		AddRow("x", "y", "z"))
+		NewRows([]string{"ticket_id", "message", "status_id", "name"}).
+		AddRow("w", "x", "y", "z"))
 
 	_, err := FetchTickets(db)
 	assert.Error(t, err)
