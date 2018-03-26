@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/pelletier/go-toml"
+  packages = ["."]
+  revision = "acdc4509485b587f5e675510c4f2c63e90ff68a8"
+  version = "v1.1.0"
+
+[[projects]]
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
@@ -25,6 +31,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9a4df6c2b9cbc7b6a8c1f52444dc0bace4dc5e03a39109d0e2f7956c62319982"
+  inputs-digest = "aea8faba41f55dda6b0ca84fc411ffa977f4149cc1da06f4e794eb13a391e3fa"
   solver-name = "gps-cdcl"
   solver-version = 1
