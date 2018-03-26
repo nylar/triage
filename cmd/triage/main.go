@@ -7,6 +7,9 @@ import (
 	"os"
 	"os/signal"
 
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
+	api "github.com/nylar/triage/api/v1"
 	"github.com/nylar/triage/config"
 	toml "github.com/pelletier/go-toml"
 	"github.com/sirupsen/logrus"
@@ -37,8 +40,19 @@ func main() {
 		logrus.WithError(err).Fatalln("Couldn't parse config file")
 	}
 
+	db, err := sqlx.Open("mysql", conf.SQL.DataSourceName())
+	if err != nil {
+		logrus.WithError(err).Fatalln("Couldn't connect to DB: %v", err)
+	}
+	defer db.Close()
+
+	if err := db.Ping(); err != nil {
+		logrus.WithError(err).Fatalln("Couldn't ping DB: %v", err)
+	}
+
 	server := &http.Server{
-		Addr: fmt.Sprintf("%s:%d", conf.HTTP.Hostname, conf.HTTP.Port),
+		Addr:    fmt.Sprintf("%s:%d", conf.HTTP.Hostname, conf.HTTP.Port),
+		Handler: api.Router(db),
 	}
 	idleConnections := make(chan struct{})
 	go shutdown(server, idleConnections)
