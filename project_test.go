@@ -33,3 +33,19 @@ func TestProjectsFindAll(t *testing.T) {
 
 	assert.Equal(t, 2, len(projects.Projects), "Expected two projects")
 }
+
+func TestProjectCreate(t *testing.T) {
+	teardown := setUp(t)
+	defer teardown()
+
+	project := &Project{Name: "project name"}
+
+	err := project.Create(db)
+
+	assert.NoError(t, err)
+	assert.Equal(t, int64(1), project.ID)
+
+	err = project.Create(db)
+
+	assert.Error(t, err, "Duplicate record error expected")
+}

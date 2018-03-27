@@ -92,11 +92,13 @@ func TestMain(m *testing.M) {
 			Username: "root",
 			Password: "secret",
 			Database: "mysql",
+			Params: map[string]string{
+				"multiStatements": "true",
+				"parseTime":       "true",
+			},
 		}
 
-		dsn := sqlConfig.DataSourceName() + "?multiStatements=true"
-
-		db, err = sqlx.Open("mysql", dsn)
+		db, err = sqlx.Open("mysql", sqlConfig.DataSourceName())
 		if err != nil {
 			return err
 		}

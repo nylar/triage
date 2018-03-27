@@ -1,16 +1,48 @@
 package triage
 
-import "github.com/jmoiron/sqlx"
+import (
+	"time"
+
+	"github.com/jmoiron/sqlx"
+)
 
 type Project struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // FindByID returns an individual project. A missing project can be determined
 // by checking the error for an sql.ErrNoRows.
 func (p *Project) FindByID(db *sqlx.DB, id int64) error {
-	return db.Get(p, `SELECT id, name FROM project WHERE id = ?`, id)
+	query := `
+SELECT
+	id,
+	name,
+	created_at,
+	updated_at
+FROM
+	project
+WHERE
+	id = ?`
+
+	return db.Get(p, query, id)
+}
+
+func (p *Project) Create(db *sqlx.DB) error {
+	res, err := db.Exec(`INSERT INTO project (name) VALUES (?)`, p.Name)
+	if err != nil {
+		return err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	p.ID = id
+	return nil
 }
 
 type Projects struct {
@@ -18,7 +50,16 @@ type Projects struct {
 }
 
 func (p *Projects) FindAll(db *sqlx.DB) error {
-	rows, err := db.Queryx(`SELECT id, name FROM project`)
+	query := `
+SELECT
+	id,
+	name,
+	created_at,
+	updated_at
+FROM
+	project`
+
+	rows, err := db.Queryx(query)
 	if err != nil {
 		return err
 	}

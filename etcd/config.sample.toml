@@ -8,3 +8,4 @@ database = "triage"
 username = "root"
 password = ""
 port = 3306
+params = { parseTime = "true" }
