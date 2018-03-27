@@ -17,6 +17,13 @@ func Router(db *sqlx.DB) *chi.Mux {
 			r.Get("/", projectService.List())
 			r.Get("/{id}", projectService.View())
 		})
+		r.Route("/ticket", func(r chi.Router) {
+			ticketService := &TicketService{
+				db: db,
+			}
+			r.Get("/", ticketService.List())
+			r.Get("/{id}", ticketService.View())
+		})
 
 	})
 
