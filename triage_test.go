@@ -1,16 +1,18 @@
 package triage
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/golang-migrate/migrate"
+	"github.com/golang-migrate/migrate/database/mysql"
+	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/jmoiron/sqlx"
-	"github.com/mattes/migrate"
-	"github.com/mattes/migrate/database/mysql"
-	_ "github.com/mattes/migrate/source/file"
 	"github.com/nylar/triage/config"
 	"gopkg.in/ory-am/dockertest.v3"
 )
@@ -18,10 +20,13 @@ import (
 var db *sqlx.DB
 
 func setUp(t *testing.T) func() error {
+	t.Logf("Setup for %s", t.Name())
+
 	driver, err := mysql.WithInstance(db.DB, &mysql.Config{})
 	if err != nil {
 		t.Fatalf("Couldn't open migration driver: %v", err)
 	}
+	defer driver.Unlock()
 
 	migrations, err := migrate.NewWithDatabaseInstance(
 		"file://migrations",
@@ -36,7 +41,31 @@ func setUp(t *testing.T) func() error {
 	}
 
 	return func() error {
+		t.Logf("Tearing down for %s", t.Name())
 		return migrations.Down()
+	}
+}
+
+func loadFixtures(t *testing.T) {
+	if db == nil {
+		panic("DB must be initialised")
+	}
+
+	pwd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Couldn't read current directory: %v", err)
+	}
+
+	fixturesPath := filepath.Join(pwd, "test_fixtures.sql")
+
+	fixtures, err := ioutil.ReadFile(fixturesPath)
+	if err != nil {
+		t.Fatalf("Couldn't read fixtures file: %v", err)
+	}
+
+	_, err = db.Exec(string(fixtures))
+	if err != nil {
+		t.Fatalf("Couldn't run fixtures: %v", err)
 	}
 }
 
@@ -65,7 +94,9 @@ func TestMain(m *testing.M) {
 			Database: "mysql",
 		}
 
-		db, err = sqlx.Open("mysql", sqlConfig.DataSourceName())
+		dsn := sqlConfig.DataSourceName() + "?multiStatements=true"
+
+		db, err = sqlx.Open("mysql", dsn)
 		if err != nil {
 			return err
 		}

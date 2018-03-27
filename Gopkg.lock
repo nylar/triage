@@ -109,16 +109,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/jmoiron/sqlx"
-  packages = [
-    ".",
-    "reflectx"
-  ]
-  revision = "cf35089a197953c69420c8d0cecda90809764b1d"
-
-[[projects]]
-  name = "github.com/mattes/migrate"
+  name = "github.com/golang-migrate/migrate"
   packages = [
     ".",
     "database",
@@ -126,8 +117,17 @@
     "source",
     "source/file"
   ]
-  revision = "035c07716cd373d88456ec4d701402df52584cb4"
-  version = "v3.0.1"
+  revision = "22f249514de9aa3f8a720a7cabbdd45d294f83a1"
+  version = "v3.2.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/jmoiron/sqlx"
+  packages = [
+    ".",
+    "reflectx"
+  ]
+  revision = "cf35089a197953c69420c8d0cecda90809764b1d"
 
 [[projects]]
   name = "github.com/opencontainers/go-digest"
@@ -216,6 +216,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "51dff32eb93696da28df176c2f5ce36f7e67683322232ee68fb94443169ba991"
+  inputs-digest = "d2bbec23aea13304d22496adf7b3dfee7837017a0d2c8d9bc3d133832a76d9ab"
   solver-name = "gps-cdcl"
   solver-version = 1
