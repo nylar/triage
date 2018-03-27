@@ -43,3 +43,16 @@ func (ps *ProjectService) View() http.HandlerFunc {
 		json.NewEncoder(w).Encode(project)
 	})
 }
+
+func (ps *ProjectService) List() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		projects := &triage.Projects{}
+		if err := projects.FindAll(ps.db); err != nil {
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(projects)
+	})
+}
