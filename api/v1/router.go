@@ -10,6 +10,12 @@ func Router(db *sqlx.DB) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Route("/api/v1/", func(r chi.Router) {
+		r.Route("/status", func(r chi.Router) {
+			statusService := &StatusService{
+				db: db,
+			}
+			r.Get("/", statusService.List())
+		})
 		r.Route("/project", func(r chi.Router) {
 			projectService := &ProjectService{
 				db: db,
