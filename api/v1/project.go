@@ -6,12 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/go-chi/chi"
-	"github.com/nylar/triage"
-
 	"github.com/jmoiron/sqlx"
+	"github.com/nylar/triage"
+	"github.com/sirupsen/logrus"
 )
 
 type ProjectService struct {
