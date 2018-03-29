@@ -10,6 +10,7 @@ type Ticket struct {
 	Description *string `json:"description"`
 	ProjectID   int64   `json:"project_id" db:"project_id"`
 	StatusID    int64   `json:"status_id" db:"status_id"`
+	CreatorID   *int64  `json:"creator_id" db:"creator_id"`
 	TimeFields
 }
 
@@ -20,7 +21,8 @@ SELECT
 	subject,
 	description,
 	project_id,
-        status_id,
+	status_id,
+	creator_id,
 	created_at,
 	updated_at
 FROM
@@ -42,7 +44,8 @@ SELECT
 	subject,
 	description,
 	project_id,
-        status_id,
+	status_id,
+	creator_id,
 	created_at,
 	updated_at
 FROM
@@ -73,7 +76,8 @@ SELECT
 	subject,
 	description,
 	project_id,
-        status_id,
+	status_id,
+	creator_id,
 	created_at,
 	updated_at
 FROM
