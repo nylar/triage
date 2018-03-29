@@ -19,6 +19,10 @@ import (
 
 var db *sqlx.DB
 
+func rootPath() string {
+	return filepath.Join(os.Getenv("GOPATH"), "src/github.com/nylar/triage")
+}
+
 func setUp(t *testing.T) func() error {
 	t.Logf("Setup for %s", t.Name())
 
@@ -29,7 +33,7 @@ func setUp(t *testing.T) func() error {
 	defer driver.Unlock()
 
 	migrations, err := migrate.NewWithDatabaseInstance(
-		"file://migrations",
+		"file://"+filepath.Join(rootPath(), "migrations"),
 		"mysql",
 		driver,
 	)
@@ -51,12 +55,7 @@ func loadFixtures(t *testing.T) {
 		panic("DB must be initialised")
 	}
 
-	pwd, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("Couldn't read current directory: %v", err)
-	}
-
-	fixturesPath := filepath.Join(pwd, "test_fixtures.sql")
+	fixturesPath := filepath.Join(rootPath(), "test_fixtures.sql")
 
 	fixtures, err := ioutil.ReadFile(fixturesPath)
 	if err != nil {

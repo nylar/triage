@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/jmoiron/sqlx"
-	"github.com/nylar/triage"
+	"github.com/nylar/triage/triage"
 	"github.com/sirupsen/logrus"
 )
 

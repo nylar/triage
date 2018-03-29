@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/nylar/triage"
+	"github.com/nylar/triage/triage"
 )
 
 type StatusService struct {
