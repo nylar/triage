@@ -1,16 +1,13 @@
 package triage
 
 import (
-	"time"
-
 	"github.com/jmoiron/sqlx"
 )
 
 type Project struct {
-	ID        int64     `json:"id"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+	TimeFields
 }
 
 // FindByID returns an individual project. A missing project can be determined
@@ -23,7 +20,7 @@ SELECT
 	created_at,
 	updated_at
 FROM
-	project
+	triage_project
 WHERE
 	id = ?`
 
@@ -31,7 +28,7 @@ WHERE
 }
 
 func (p *Project) Create(db *sqlx.DB) error {
-	res, err := db.Exec(`INSERT INTO project (name) VALUES (?)`, p.Name)
+	res, err := db.Exec(`INSERT INTO triage_project (name) VALUES (?)`, p.Name)
 	if err != nil {
 		return err
 	}
@@ -57,7 +54,7 @@ SELECT
 	created_at,
 	updated_at
 FROM
-	project`
+	triage_project`
 
 	rows, err := db.Queryx(query)
 	if err != nil {

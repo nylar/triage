@@ -1,19 +1,16 @@
 package triage
 
 import (
-	"time"
-
 	"github.com/jmoiron/sqlx"
 )
 
 type Ticket struct {
-	ID          int64     `json:"id"`
-	Subject     string    `json:"subject"`
-	Description *string   `json:"description"`
-	ProjectID   int64     `json:"project_id" db:"project_id"`
-	StatusID    int64     `json:"status_id" db:"status_id"`
-	CreatedAt   time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
+	ID          int64   `json:"id"`
+	Subject     string  `json:"subject"`
+	Description *string `json:"description"`
+	ProjectID   int64   `json:"project_id" db:"project_id"`
+	StatusID    int64   `json:"status_id" db:"status_id"`
+	TimeFields
 }
 
 func (t *Ticket) FindByID(db *sqlx.DB, id int64) error {
@@ -27,7 +24,7 @@ SELECT
 	created_at,
 	updated_at
 FROM
-	ticket
+	triage_ticket
 WHERE
 	id = ?`
 
@@ -49,7 +46,7 @@ SELECT
 	created_at,
 	updated_at
 FROM
-	ticket`
+	triage_ticket`
 
 	rows, err := db.Queryx(query)
 	if err != nil {
@@ -80,7 +77,7 @@ SELECT
 	created_at,
 	updated_at
 FROM
-	ticket
+	triage_ticket
 WHERE
 	project_id = ?`
 

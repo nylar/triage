@@ -1,17 +1,14 @@
 package triage
 
 import (
-	"time"
-
 	"github.com/jmoiron/sqlx"
 )
 
 type Status struct {
-	ID        int64     `json:"id"`
-	Name      string    `json:"name"`
-	Colour    string    `json:"colour"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	ID     int64  `json:"id"`
+	Name   string `json:"name"`
+	Colour string `json:"colour"`
+	TimeFields
 }
 
 type Statuses struct {
@@ -27,7 +24,7 @@ SELECT
 	created_at,
 	updated_at
 FROM
-	status`
+	triage_status`
 
 	rows, err := db.Queryx(query)
 	if err != nil {
