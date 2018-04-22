@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package ticketpb;
+
+message Ticket {
+    string id = 1;
+    string subject = 2;
+}
+
+service TicketService {
+    rpc List(ListRequest) returns (ListResponse) {}
+    rpc Create(CreateRequest) returns (CreateResponse) {}
+}
+
+message ListRequest {}
+
+message ListResponse {
+    repeated Ticket tickets = 1;
+}
+
+message CreateRequest {
+    string subject = 1;
+}
+
+message CreateResponse {
+    Ticket ticket = 1;
+}

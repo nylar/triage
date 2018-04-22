@@ -1,0 +1,25 @@
+[server]
+host = "localhost"
+port = 3000
+
+# For when you want to use an SQL database.
+#
+# If you are using MySQL or MariaDB, then set the vendor to be "mysql"
+# For Postgres or Cockroach DB, set the vendor to be "postgres".
+#
+# Documentation for the available params are available for both mysql and
+# postgres based databases:
+#
+# Postgres: https://godoc.org/github.com/lib/pq#hdr-Connection_String_Parameters
+# MySQL: https://github.com/Go-SQL-Driver/MySQL/#parameters
+# [sql]
+# vendor = "postgres"
+# host = "localhost"
+# port = 26257
+# username = "triage"
+# password = ""
+# database = "triage"
+# params = { sslmode = "disable" }
+
+# [bolt]
+# path = "/tmp/triage.db"
