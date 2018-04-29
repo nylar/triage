@@ -6,7 +6,8 @@ import (
 
 	"github.com/boltdb/bolt"
 	"github.com/gogo/protobuf/proto"
-	"github.com/google/uuid"
+	"github.com/nylar/triage/base"
+	"github.com/nylar/triage/pkg/timeutil"
 	"github.com/nylar/triage/ticket/ticketpb"
 )
 
@@ -17,8 +18,7 @@ var (
 )
 
 type Bolt struct {
-	DB          *bolt.DB
-	IDGenerator func() (uuid.UUID, error)
+	base.Bolt
 }
 
 // Bootstrap ensures the required buckets are created
@@ -66,9 +66,13 @@ func (bs *Bolt) Create(ctx context.Context, req *ticketpb.CreateRequest) (*ticke
 		return nil, err
 	}
 
+	now := bs.Clock.Now().UTC()
+
 	ticket := &ticketpb.Ticket{
-		Id:      id.String(),
-		Subject: req.Subject,
+		Id:        id.String(),
+		Subject:   req.Subject,
+		CreatedAt: timeutil.TimeToTimestamp(now),
+		UpdatedAt: timeutil.TimeToTimestamp(now),
 	}
 
 	if err := bs.DB.Update(func(tx *bolt.Tx) error {

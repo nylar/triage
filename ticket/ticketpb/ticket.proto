@@ -2,9 +2,13 @@ syntax = "proto3";
 
 package ticketpb;
 
+import "google/protobuf/timestamp.proto";
+
 message Ticket {
     string id = 1;
     string subject = 2;
+    google.protobuf.Timestamp createdAt = 3;
+    google.protobuf.Timestamp updatedAt = 4;
 }
 
 service TicketService {

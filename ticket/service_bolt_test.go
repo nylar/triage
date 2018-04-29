@@ -6,10 +6,12 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/boltdb/bolt"
 	"github.com/gogo/protobuf/proto"
 	"github.com/google/uuid"
+	"github.com/nylar/triage/base"
 	"github.com/nylar/triage/ticket"
 	"github.com/nylar/triage/ticket/ticketpb"
 	"github.com/stretchr/testify/assert"
@@ -82,8 +84,11 @@ func TestBoltCreate(t *testing.T) {
 	defer teardownBolt(t, db)
 
 	service := &ticket.Bolt{
-		DB:          db,
-		IDGenerator: mockUUIDGenerator,
+		Bolt: base.Bolt{
+			DB:          db,
+			IDGenerator: mockUUIDGenerator,
+			Clock:       mockClock{time.Date(2018, time.July, 25, 7, 30, 45, 0, time.UTC)},
+		},
 	}
 
 	if err := service.Bootstrap(); err != nil {
@@ -105,7 +110,9 @@ func TestBoltList(t *testing.T) {
 	defer teardownBolt(t, db)
 
 	service := &ticket.Bolt{
-		DB: db,
+		Bolt: base.Bolt{
+			DB: db,
+		},
 	}
 
 	if err := service.Bootstrap(); err != nil {

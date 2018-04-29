@@ -10,7 +10,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
+	"github.com/nylar/triage/base"
 	"github.com/nylar/triage/config"
+	"github.com/nylar/triage/pkg/clock"
 	"github.com/nylar/triage/ticket"
 	"github.com/nylar/triage/ticket/ticketpb"
 	toml "github.com/pelletier/go-toml"
@@ -43,6 +45,9 @@ func main() {
 		log.Fatal().Err(err).Msg("Couldn't parse config")
 	}
 
+	idGenerator := uuid.NewRandom
+	realClock := clock.Real{}
+
 	var ticketService ticket.Service
 	if conf.SQL != nil {
 		log.Info().Str("vendor", conf.SQL.Vendor).Msg("Using SQL database")
@@ -62,10 +67,15 @@ func main() {
 			log.Fatal().Err(err).Msg("Couldn't ping database")
 		}
 
-		ticketService = &ticket.SQL{
+		baseSQL := base.SQL{
 			DB:          db,
 			Placeholder: conf.SQL.Placeholder(),
-			IDGenerator: uuid.NewRandom,
+			IDGenerator: idGenerator,
+			Clock:       realClock,
+		}
+
+		ticketService = &ticket.SQL{
+			SQL: baseSQL,
 		}
 	} else if conf.Bolt != nil {
 		log.Info().Msg("Using bolt database")
@@ -76,9 +86,14 @@ func main() {
 		}
 		defer db.Close()
 
-		ticketService = &ticket.Bolt{
+		baseBolt := base.Bolt{
 			DB:          db,
-			IDGenerator: uuid.NewRandom,
+			IDGenerator: idGenerator,
+			Clock:       realClock,
+		}
+
+		ticketService = &ticket.Bolt{
+			Bolt: baseBolt,
 		}
 
 	} else {
