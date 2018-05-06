@@ -22,13 +22,12 @@ type Config struct {
 
 // Server provides configuration for the gRPC server
 type Server struct {
-	Host string `toml:"host"`
-	Port int    `toml:"port"`
+	Port int `toml:"port"`
 }
 
 // Address builds the address that the server will listen on
 func (s Server) Address() string {
-	return fmt.Sprintf("%s:%d", s.Host, s.Port)
+	return fmt.Sprintf(":%d", s.Port)
 }
 
 // SQL provides configuration for connecting to an SQL database

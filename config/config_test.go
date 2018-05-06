@@ -112,9 +112,8 @@ func TestSqlPlaceholder(t *testing.T) {
 
 func TestServerAddress(t *testing.T) {
 	server := config.Server{
-		Host: "localhost",
 		Port: 3000,
 	}
 
-	assert.Equal(t, "localhost:3000", server.Address())
+	assert.Equal(t, ":3000", server.Address())
 }

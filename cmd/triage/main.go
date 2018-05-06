@@ -92,6 +92,10 @@ func main() {
 			Clock:       realClock,
 		}
 
+		if err := baseBolt.Bootstrap(); err != nil {
+			log.Fatal().Err(err).Msg("Couldn't bootstrap database")
+		}
+
 		ticketService = &ticket.Bolt{
 			Bolt: baseBolt,
 		}

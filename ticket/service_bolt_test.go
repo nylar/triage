@@ -91,7 +91,7 @@ func TestBoltCreate(t *testing.T) {
 		},
 	}
 
-	if err := service.Bootstrap(); err != nil {
+	if err := service.Bolt.Bootstrap(); err != nil {
 		t.Fatalf("Couldn't bootstrap DB: %v", err)
 	}
 
@@ -115,7 +115,7 @@ func TestBoltList(t *testing.T) {
 		},
 	}
 
-	if err := service.Bootstrap(); err != nil {
+	if err := service.Bolt.Bootstrap(); err != nil {
 		t.Fatalf("Couldn't bootstrap DB: %v", err)
 	}
 

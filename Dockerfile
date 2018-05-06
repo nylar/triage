@@ -12,3 +12,4 @@ WORKDIR /app
 COPY --from=build /tmp/triage /app/
 ENV TRIAGE_CONFIG_PATH=/etc/triage.toml
 ENTRYPOINT ./triage
+EXPOSE 3000

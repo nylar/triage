@@ -11,8 +11,6 @@ import (
 	"github.com/nylar/triage/ticket/ticketpb"
 )
 
-const bucketName = "ticket"
-
 var (
 	errBucketNotFound = errors.New("Triage bucket not found")
 )
@@ -21,19 +19,11 @@ type Bolt struct {
 	base.Bolt
 }
 
-// Bootstrap ensures the required buckets are created
-func (bs *Bolt) Bootstrap() error {
-	return bs.DB.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists([]byte(bucketName))
-		return err
-	})
-}
-
 func (bs *Bolt) List(ctx context.Context, req *ticketpb.ListRequest) (*ticketpb.ListResponse, error) {
 	var tickets []*ticketpb.Ticket
 
 	if err := bs.DB.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(bucketName))
+		bucket := tx.Bucket([]byte(base.TicketBucket))
 		if bucket == nil {
 			return errBucketNotFound
 		}
@@ -76,7 +66,7 @@ func (bs *Bolt) Create(ctx context.Context, req *ticketpb.CreateRequest) (*ticke
 	}
 
 	if err := bs.DB.Update(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(bucketName))
+		bucket := tx.Bucket([]byte(base.TicketBucket))
 		if bucket == nil {
 			return errBucketNotFound
 		}
