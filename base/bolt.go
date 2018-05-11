@@ -8,11 +8,18 @@ import (
 
 // Buckets
 const (
-	TicketBucket = "ticket"
+	TicketBucket         = "ticket"
+	CommentBucket        = "comment"
+	TicketCommentsBucket = "ticket_comments"
 )
+
+// BoltRecordSeparator is the 'information separator one' character, ASCII 31
+const BoltRecordSeparator = '\u001F'
 
 var buckets = []string{
 	TicketBucket,
+	CommentBucket,
+	TicketCommentsBucket,
 }
 
 type Bolt struct {

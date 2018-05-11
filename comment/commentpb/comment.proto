@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package commentpb;
+
+import "google/protobuf/timestamp.proto";
+
+message Comment {
+    string id = 1;
+    string ticket_id = 2;
+    string content = 3;
+    google.protobuf.Timestamp createdAt = 4;
+    google.protobuf.Timestamp updatedAt = 5;
+}
+
+service CommentService {
+    rpc List(ListRequest) returns (ListResponse) {}
+    rpc Create(CreateRequest) returns (CreateResponse) {}
+}
+
+message ListRequest {
+    string ticket_id = 1;
+}
+
+message ListResponse {
+    repeated Comment comments = 1;
+}
+
+message CreateRequest {
+    string ticket_id = 1;
+    string content = 2;
+}
+
+message CreateResponse {
+    Comment comment = 1;
+}

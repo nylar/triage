@@ -11,6 +11,8 @@ import (
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/nylar/triage/base"
+	"github.com/nylar/triage/comment"
+	"github.com/nylar/triage/comment/commentpb"
 	"github.com/nylar/triage/config"
 	"github.com/nylar/triage/pkg/clock"
 	"github.com/nylar/triage/ticket"
@@ -49,6 +51,8 @@ func main() {
 	realClock := clock.Real{}
 
 	var ticketService ticket.Service
+	var commentService comment.Service
+
 	if conf.SQL != nil {
 		log.Info().Str("vendor", conf.SQL.Vendor).Msg("Using SQL database")
 
@@ -77,6 +81,9 @@ func main() {
 		ticketService = &ticket.SQL{
 			SQL: baseSQL,
 		}
+		commentService = &comment.SQL{
+			SQL: baseSQL,
+		}
 	} else if conf.Bolt != nil {
 		log.Info().Msg("Using bolt database")
 
@@ -100,6 +107,9 @@ func main() {
 			Bolt: baseBolt,
 		}
 
+		commentService = &comment.Bolt{
+			Bolt: baseBolt,
+		}
 	} else {
 		log.Fatal().Msg("A datastore has not been configured")
 	}
@@ -107,6 +117,7 @@ func main() {
 	server := grpc.NewServer()
 
 	ticketpb.RegisterTicketServiceServer(server, ticketService)
+	commentpb.RegisterCommentServiceServer(server, commentService)
 
 	listener, err := net.Listen("tcp", conf.Server.Address())
 	if err != nil {

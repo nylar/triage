@@ -25,7 +25,7 @@ func (ts *SQL) List(ctx context.Context, req *ticketpb.ListRequest) (*ticketpb.L
 		From(tableName).
 		PlaceholderFormat(ts.Placeholder).
 		RunWith(ts.DB).
-		Query()
+		QueryContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -68,13 +68,13 @@ func (ts *SQL) Create(ctx context.Context, req *ticketpb.CreateRequest) (*ticket
 		return nil, err
 	}
 
-	now := ts.Clock.Now().UTC()
+	now := timeutil.TimeToTimestamp(ts.Clock.Now().UTC())
 
 	ticket := &ticketpb.Ticket{
 		Id:        id.String(),
 		Subject:   req.Subject,
-		CreatedAt: timeutil.TimeToTimestamp(now),
-		UpdatedAt: timeutil.TimeToTimestamp(now),
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 
 	_, err = sqrl.
@@ -87,7 +87,7 @@ func (ts *SQL) Create(ctx context.Context, req *ticketpb.CreateRequest) (*ticket
 			timeutil.TimestampToTime(ticket.UpdatedAt)).
 		PlaceholderFormat(ts.Placeholder).
 		RunWith(ts.DB).
-		Exec()
+		ExecContext(ctx)
 	if err != nil {
 		return nil, err
 	}

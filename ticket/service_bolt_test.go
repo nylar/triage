@@ -53,7 +53,7 @@ func loadBoltFixtures(t *testing.T, db *bolt.DB) {
 	t.Helper()
 
 	if err := db.Update(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte("ticket"))
+		bucket := tx.Bucket([]byte(base.TicketBucket))
 		if bucket == nil {
 			return fmt.Errorf("Couldn't find bucket")
 		}
