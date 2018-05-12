@@ -59,6 +59,18 @@
   revision = "d34b9ff171c21ad295489235aec8b6626023cd04"
 
 [[projects]]
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
+  version = "v0.0.2"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/olekukonko/tablewriter"
+  packages = ["."]
+  revision = "d4647c9c7a84d847478d890b816b7d8b62b0b279"
+
+[[projects]]
   name = "github.com/pelletier/go-toml"
   packages = ["."]
   revision = "acdc4509485b587f5e675510c4f2c63e90ff68a8"
@@ -82,10 +94,22 @@
   version = "v1.6.0"
 
 [[projects]]
+  name = "github.com/stoewer/go-strcase"
+  packages = ["."]
+  revision = "c8136b55823dc6af966d084a06056c5575f6400f"
+  version = "v1.0.1"
+
+[[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
   revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
   version = "v1.2.1"
+
+[[projects]]
+  name = "github.com/urfave/cli"
+  packages = ["."]
+  revision = "cfb38830724cc34fedffe9a2a29fb54fa9169cd1"
+  version = "v1.20.0"
 
 [[projects]]
   branch = "master"
@@ -168,6 +192,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "55c18d01159269e8dba62de28c4df9dc2d9afd2e40faee7d75006cc9d7abde4f"
+  inputs-digest = "66969194b712f09b80ca383c777f34138ef9e6315830b62e984e4ee85744b9ca"
   solver-name = "gps-cdcl"
   solver-version = 1
