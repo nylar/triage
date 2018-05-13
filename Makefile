@@ -11,9 +11,12 @@ build:
 run:
 	@ ./$(BINARY_PATH)
 
+test:
+	@ go test ./... -v -race
+
 clean-binary:
 	@ rm $(BINARY_PATH)
 
 clean: clean-binary
 
-.PHONY: clean
+.PHONY: clean test
