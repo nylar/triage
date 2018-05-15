@@ -15,6 +15,9 @@ import (
 func (cl *client) listComment() func(*cli.Context) error {
 	return func(c *cli.Context) error {
 		ticketID := c.String("ticket_id")
+		if ticketID == "" {
+			log.Fatal().Msg("Ticket ID can't be empty")
+		}
 
 		resp, err := cl.commentService.List(context.Background(), &commentpb.ListRequest{
 			TicketId: ticketID,
@@ -45,7 +48,14 @@ func (cl *client) listComment() func(*cli.Context) error {
 func (cl *client) createComment() func(*cli.Context) error {
 	return func(c *cli.Context) error {
 		ticketID := c.String("ticket_id")
+		if ticketID == "" {
+			log.Fatal().Msg("Ticket ID can't be empty")
+		}
+
 		content := c.String("content")
+		if content == "" {
+			log.Fatal().Msg("Content can't be empty")
+		}
 
 		resp, err := cl.commentService.Create(context.Background(), &commentpb.CreateRequest{
 			TicketId: ticketID,
